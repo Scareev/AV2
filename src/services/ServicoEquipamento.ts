@@ -17,7 +17,7 @@ export default class ServicoEquipamento {
 
         return equipamento.historicoMovimentacao ?? [];
     }
-
+    // tungstênio garcia
     atualizarEstadoFisico(
         id: string,
         novoEstado: EstadoFisico,
