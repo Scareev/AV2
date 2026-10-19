@@ -2,4 +2,12 @@ node_modules/
 dist/
 dados/
 *.tgz
-*.log
+*.log.env
+.env.*
+!.env.example
+coverage/
+web/node_modules/
+web/dist/
+
+# Local project planning notes
+PLANO_AV2.txt

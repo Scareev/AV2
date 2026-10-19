@@ -1,54 +1,36 @@
-# GreenCode AV1
+# GreenCode AV2
 
-## Execução
+Aplicação monolítica em evolução para API REST com Fastify, persistência PostgreSQL via Prisma e interface SPA em React + TypeScript + Vite.
 
-```text
-npm install
-npm test
-npm run dev
-npm start
-```
+## Requisitos
 
-Na primeira execução, o sistema solicita o usuário e a senha do primeiro administrador. A configuração é criada em `dados/`.
+- Node.js 24 ou compatível com as dependências instaladas.
+- PostgreSQL acessível pela variável `DATABASE_URL`.
 
-## Arquitetura de segurança
+## Configuração local
 
-A CLI chama serviços de aplicação. Os serviços validam regras de negócio e usam `RepositorioArquivo` para persistir dados. O repositório cifra os conteúdos antes da gravação e usa arquivo temporário seguido de renomeação para reduzir o risco de escrita parcial.
+1. Instale as dependências da API com `npm install` e as do site com `npm install --prefix web`.
+2. Copie `.env.example` para `.env` e configure `DATABASE_URL`, `JWT_SECRET` (mínimo 32 caracteres) e `SEED_ADMIN_PASSWORD` (mínimo 12 caracteres). A senha seed não possui valor padrão.
+3. Com o PostgreSQL ativo, aplique as migrações com `npm run db:migrate`.
+4. Crie os dados de desenvolvimento com `npm run db:seed`. O usuário administrador padrão é `admin`; pode ser alterado por `SEED_ADMIN_USERNAME`.
+5. Inicie a API com `npm run dev`.
+6. Em outro terminal, inicie o site com `npm run dev:web` e acesse o endereço local informado pelo Vite. O proxy `/api` encaminha chamadas à API em `http://localhost:3000`.
 
-A autenticação compara o hash SHA-256 da senha combinada com um salt aleatório. O salt é armazenado junto da credencial; a senha original não é armazenada.
+O seed pode ser executado novamente: usa identificadores fixos e operações upsert. A senha do administrador configurada no ambiente é atualizada a cada execução do seed.
 
-## Criptografia
+## Comandos disponíveis
 
-Os arquivos de persistência usam AES-256-GCM. Cada gravação utiliza um IV aleatório e uma tag de autenticação. A tag permite detectar alteração ou corrupção do conteúdo durante a decifragem.
+- `npm run dev`: executa o servidor em modo de desenvolvimento.
+- `npm run build`: gera a versão de produção da API em `dist/`.
+- `npm start`: inicia a versão compilada.
+- `npm run typecheck`: verifica os tipos TypeScript.
+- `npm test`: executa os testes unitários de regras, CNPJ e permissões.
+- `npm run dev:web`: inicia a SPA React + Vite para desenvolvimento.
+- `npm run build:web`: compila e empacota a SPA em `web/dist/`.
+- `npm run db:generate`: gera o Prisma Client.
+- `npm run db:migrate`: cria/aplica migrações no banco de desenvolvimento.
+- `npm run db:deploy`: aplica migrações existentes em ambiente de deploy.
+- `npm run db:seed`: popula o banco com dados iniciais representativos.
+- `npm run db:studio`: abre a interface visual do Prisma para inspecionar dados.
 
-A chave é gerada com `randomBytes(32)` durante o provisionamento. Nesta versão acadêmica, ela é mantida em `dados/chave-mestre.txt` para permitir a reinicialização do programa. Em produção, esse arquivo deveria ser protegido por um mecanismo externo de gerenciamento de segredos.
-
-## Sessões
-
-Cada login cria um token aleatório com validade inicial de 30 minutos. A validação do token renova a expiração por mais 30 minutos, representando expiração após 30 minutos de inatividade. As sessões são persistidas em `dados/sessoes.json` e recarregadas na inicialização; o logout remove a sessão ativa.
-
-## Regras de negócio implementadas
-
-- CNPJ com 14 dígitos e dígitos verificadores válidos.
-- CNPJ único entre organizações persistidas.
-- Data de entrada não futura e limitada aos últimos 90 dias.
-- Equipamento não pode ir para desmonte antes da conclusão da triagem.
-- Estados `DANIFICADO_GRAVE` e `INSERVIVEL` exigem justificativa.
-- Permissões são associadas aos quatro papéis definidos pela aplicação.
-- Journal retém registros por 180 dias e rotaciona acima de 10 MB.
-- Reversões do journal executam uma ação de restauração fornecida pelo serviço responsável pela entidade.
-
-## Testes disponíveis
-
-A suíte em `src/testes/fluxo.test.ts` cobre:
-
-- CNPJ válido e inválido;
-- data futura;
-- cifragem e decifragem AES-256-GCM;
-- login e logout;
-- permissões por papel;
-- provisionamento;
-- jornada organização -> lote -> equipamento -> triagem -> movimentação;
-- tentativa de desmonte antes da triagem.
-
-Execute com `npm test`.
+O login da API é `POST /auth/login`, com JSON `{ "usuario": "admin", "senha": "..." }`. A resposta contém um token Bearer JWT válido por 30 minutos e os dados públicos do usuário. Envie o token no cabeçalho `Authorization: Bearer <token>` para rotas protegidas; os hooks de autenticação e autorização por papel ficam em `src/auth/hooks.ts` para uso pelos controllers. A documentação OpenAPI fica em `/docs` e o endpoint público de saúde em `/health`.

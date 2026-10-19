@@ -1,0 +1,134 @@
+2026-10-17 — O repositório local AV2 foi criado como cópia independente do AV1, preservando o histórico Git e removendo o remoto para manter os projetos separados.
+
+2026-10-17 — Criado PLANO_AV2.txt com a comparação concluída, o roteiro numerado, as regras de autorização entre etapas e a stack proposta.
+
+2026-10-17 — Atualizado PLANO_AV2.txt após confirmação do usuário de que o SPA deve ser implementado como um site nesta entrega; etapa 2 e stack foram marcadas como aprovadas.
+
+2026-10-17 — Criado log.txt a pedido do usuário para registrar cada alteração do AV2 em parágrafos individuais; este registro inicial documenta as mudanças anteriores ao log.
+
+2026-10-17 — Atualizado PLANO_AV2.txt para exigir um parágrafo em log.txt para cada mudança e registrar a autorização do usuário para iniciar a etapa 3.
+
+2026-10-17 — Atualizados package.json e tsconfig.json para ESM/TypeScript, scripts de desenvolvimento/build/servidor e dependências da API Fastify, autenticação, Prisma 7 com adaptador PostgreSQL, documentação OpenAPI e ferramentas TypeScript; as versões Prisma 7 foram escolhidas por exigirem Node 20.19/22.12/24 e adaptador PostgreSQL, compatíveis com Node 24.22 instalado.
+
+2026-10-17 — Criados .env.example, src/config/env.ts, src/server/app.ts e src/server.ts com configuração por ambiente, validação de porta e segredo JWT, CORS configurável, documentação inicial, endpoint de saúde e encerramento gracioso.
+
+2026-10-17 — Atualizado .gitignore para proteger arquivos .env reais e ignorar artefatos de build/teste e dependências do futuro SPA.
+
+2026-10-17 — Criados os diretórios src/config e src/server e adicionados src/config/env.ts e src/server/app.ts; eles completam a configuração tipada de ambiente e a aplicação Fastify inicial. O primeiro comando de scaffold não encontrou esses diretórios, então esta entrada registra a correção.
+
+2026-10-17 — Atualizado PLANO_AV2.txt para registrar o estado parcial da etapa 3 e a falha de instalação de dependências causada por ENOTFOUND ao acessar registry.npmjs.org; o lockfile permanece pendente e as etapas seguintes não foram iniciadas.
+
+2026-10-17 — Tentada instalação das dependências com npm install e timeout/retries limitados; a resolução DNS de registry.npmjs.org falhou (ENOTFOUND), portanto nenhum pacote foi baixado e package-lock.json permaneceu inalterado.
+
+2026-10-17 — npm install foi concluído depois que o usuário informou que o npm estava instalado; node_modules foi criado, package-lock.json atualizado e npm ls --depth=0 confirmou as dependências declaradas. Isso conclui a etapa 3.
+
+2026-10-17 — Atualizado PLANO_AV2.txt para marcar a etapa 3 como concluída e a etapa 4 como aguardando autorização; nenhuma alteração do domínio começou.
+
+2026-10-17 — Atualizado PLANO_AV2.txt conforme esclarecimento do usuário: AV1 é somente referência de leitura e permanece intacta; na etapa 4, modelar o domínio no AV2 e evitar as lacunas identificadas, incluindo a regra correta de justificativa para queda de duas ou mais categorias. A etapa 4 continua aguardando autorização.
+
+2026-10-17 — Atualizado src/domain/Organizacao.ts para permitir contrato vigente nulo, conforme a relação opcional especificada na AV2.
+
+2026-10-17 — Atualizado src/services/ServicoOrganizacao.ts para normalizar contrato ausente como null e impedir renovação quando a organização não possui contrato vigente.
+
+2026-10-17 — Criado src/domain/regras/EstadoFisico.ts com ordem explícita de severidade e validação de justificativa para quedas de duas ou mais categorias, substituindo a regra fixa por estados específicos copiada da AV1.
+
+2026-10-17 — Atualizado src/services/ServicoEquipamento.ts para aplicar a regra de domínio comparando estado anterior e novo e para receber Equipamento tipado no cadastro, evitando repetir a falha da AV1.
+
+2026-10-17 — Atualizado PLANO_AV2.txt para marcar a etapa 4 como concluída e a etapa 5 como aguardando autorização. A AV1 permaneceu intacta.
+
+2026-10-17 — Atualizado PLANO_AV2.txt para registrar que a etapa 5 foi autorizada por “prossiga” e está em andamento; a escolha sobre persistência de justificativas e campo de versão foi marcada como pendente por alterar o schema Prisma.
+
+2026-10-17 — Criado prisma.config.ts e o diretório prisma para centralizar, no padrão do Prisma 7, o caminho do schema, o diretório de migrações e a URL do PostgreSQL; a URL vazia permite comandos de geração que não exigem conexão quando DATABASE_URL não estiver configurada.
+
+2026-10-17 — Criado o esqueleto prisma/schema.prisma com o gerador oficial de client do Prisma 7 e provider PostgreSQL; os modelos e relações serão adicionados após resolver as decisões de persistência pendentes.
+
+2026-10-17 — Substituído o esqueleto de prisma/schema.prisma pelo schema relacional das entidades do diagrama (Organizacao, Contrato, Lote, Equipamento e Movimentacao), seus campos e enums; incluída Credencial para autenticação JWT, preservada a opcionalidade de contrato, adicionadas unicidades de CNPJ/código de barras/usuário e relações com chaves estrangeiras. A observação da movimentação guarda justificativas; não foi incluído versionamento, sessão persistida ou entidade de journal, respeitando o diagrama e a arquitetura JWT/transações do enunciado AV2.
+
+2026-10-17 — Atualizado PLANO_AV2.txt com a orientação do usuário de priorizar o diagrama: justificativas serão registradas na observação da movimentação e o schema inicial não terá versionamento nem sessão/journal persistidos; a autenticação seguirá JWT conforme AV2.
+
+2026-10-17 — Gerado prisma/migrations/20261017120000_init/migration.sql com DDL PostgreSQL para os modelos, enums, índices de unicidade e chaves estrangeiras, usando prisma migrate diff --from-empty sem conectar a banco local.
+
+2026-10-17 — Criado prisma/migrations/migration_lock.toml com provider PostgreSQL para identificar o banco da história de migrações.
+
+2026-10-17 — Gerado Prisma Client 7.10.1 em src/generated/prisma conforme o output configurado no schema, disponibilizando os tipos para a implementação futura dos repositórios.
+
+2026-10-17 — Atualizado PLANO_AV2.txt para marcar a etapa 5 como concluída, registrar a validação do schema e a geração de migração/client, e manter a etapa 6 aguardando autorização expressa.
+
+2026-10-19 — Criado src/infra/database/prisma.ts para inicializar o Prisma Client 7 com o adaptador PostgreSQL e DATABASE_URL validada, centralizando a conexão usada pelos repositórios e pelo seed.
+
+2026-10-19 — Criados os repositórios Prisma de Organização, Contrato, Lote, Equipamento, Movimentação e Credencial em src/repositories; oferecem operações de persistência tipadas e consultas com relações/históricos conforme o schema, sem ainda migrar as regras dos serviços da etapa 7.
+
+2026-10-19 — Criado prisma/seed.ts com carga repetível de duas organizações (uma com contrato e outra sem), dois lotes, três equipamentos, histórico de movimentações e credencial administrativa; bcrypt gera salt e hash de senha e o seed exige segredo local de pelo menos 12 caracteres, evitando senha padrão embutida.
+
+2026-10-19 — Atualizados prisma.config.ts e package.json para registrar o comando Prisma 7 de seed e expor npm run db:seed; atualizado .env.example com os nomes das variáveis do administrador de desenvolvimento, deixando a senha vazia para ser definida localmente.
+
+2026-10-19 — Atualizado src/server/app.ts para desconectar o Prisma Client no hook onClose do Fastify, incluindo o pool do banco no encerramento gracioso já configurado para o servidor.
+
+2026-10-19 — Atualizado PLANO_AV2.txt para marcar a etapa 6 concluída no código e registrar que a execução do seed depende de PostgreSQL ativo e das variáveis DATABASE_URL/SEED_ADMIN_PASSWORD; a etapa 7 permanece aguardando autorização.
+
+2026-10-19 — Reescrito README.md para descrever a AV2 em vez do fluxo CLI da AV1 e documentar requisitos locais, configuração segura do seed, migrações, comandos Prisma e execução do servidor.
+
+2026-10-19 — Corrigido o CNPJ de demonstração do Instituto Horizonte em prisma/seed.ts após verificar os dígitos verificadores; os dois registros do seed agora usam CNPJs estruturalmente válidos para as regras de domínio.
+
+2026-10-19 — Atualizado o topo de PLANO_AV2.txt com o lembrete do usuário para validar posteriormente o seed em outra máquina; ajustados os registros das etapas 6 e 7 para refletir que o seed está implementado mas não executado e que o versionamento otimista foi deixado fora do schema inicial por prioridade do diagrama.
+
+2026-10-19 — Migrado src/services/ServicoOrganizacao.ts para operações assíncronas no RepositorioOrganizacao Prisma; manteve validação e normalização do CNPJ, converte P2002 em mensagem de duplicidade e preserva contrato opcional, cadastro, busca, listagem e renovação. Ampliado src/repositories/RepositorioOrganizacao.ts com consultas/atualização de contrato.
+
+2026-10-19 — Migrado src/services/ServicoLote.ts para o RepositorioLote Prisma, mantendo validação da data de entrada, consulta por período e processamento de triagem; criação do lote e equipamentos associados usa escrita aninhada atômica do Prisma. Ampliado src/repositories/RepositorioLote.ts para adicionar equipamentos com vínculo referencial ao lote.
+
+2026-10-19 — Migrado src/services/ServicoEquipamento.ts para persistência Prisma assíncrona; rastreamento e cadastro consultam/gravam no banco, degradação física mantém validação de justificativa e grava a justificativa como observação de movimentação. Atualizações de estado e conclusão de triagem usam transação com atualização condicional do estado anterior e registro de movimentação, evitando sobrescrever transições concorrentes sem adicionar coluna de versão.
+
+2026-10-19 — Migrado src/services/ServicoRelatorio.ts para consultas Prisma de lotes, equipamentos/status e organizações/contratos, mantendo os relatórios e validação de intervalo temporal; valores Decimal são convertidos para número ao calcular o total financeiro.
+
+2026-10-19 — Atualizado src/services/ServicoLote.ts para omitir campos opcionais ausentes ao compor entradas Prisma, preservando os defaults do banco e a compatibilidade com tipagem estrita.
+
+2026-10-19 — Atualizado PLANO_AV2.txt para marcar a etapa 7 concluída no código, registrar serviços migrados, transações/escritas aninhadas e controle condicional de concorrência sem coluna de versão; etapa 8 permanece aguardando autorização e validações automatizadas ficam para a etapa 10.
+
+2026-10-19 — Preservado em src/services/ServicoEquipamento.ts o formato de código de barras já definido pela lógica anterior (tipo numérico e sequência com seis dígitos), evitando alterar o identificador durante a migração para Prisma.
+
+2026-10-19 — Reorganizadas as operações Prisma da etapa 7 para respeitar Controller-Service-Repository: transações de estado/movimentação passaram ao RepositorioEquipamento, persistência de movimentação foi encapsulada nesse repositório, e criado RepositorioRelatorio para as consultas usadas por ServicoRelatorio. Os serviços ficaram responsáveis pelas validações e decisões de domínio.
+
+2026-10-19 — Substituído src/services/ServicoAutenticacao.ts pelo serviço assíncrono de credenciais Prisma com bcrypt para login, criação/alteração de senha e permissões dos quatro papéis; removida a implementação SHA-256 em memória para não reutilizá-la na AV2.
+
+2026-10-19 — Criados src/auth/jwt.d.ts, src/auth/hooks.ts e src/controllers/AutenticacaoController.ts com tipos dos claims, verificação Bearer JWT, guardas por operação e endpoint POST /auth/login com resposta genérica para credenciais inválidas.
+
+2026-10-19 — Atualizado src/server/app.ts para assinar JWT com validade de 30 minutos, registrar rota de login e tag OpenAPI de autenticação; ajustado src/repositories/RepositorioCredencial.ts para registrar último acesso no banco.
+
+2026-10-19 — Removidos de AV2 src/cli/CLIInterface.ts, src/index.ts e src/services/ServicoProvisionamento.ts, que eram o fluxo CLI legado baseado em sessões/arquivos e dependiam do serviço SHA-256 substituído; o ponto de entrada AV2 permanece o servidor HTTP. Excluídos temporariamente os testes antigos copiados da AV1 de tsconfig.json para que não sejam compilados contra APIs que estão sendo migradas; a suíte da AV2 será tratada na etapa 10.
+
+2026-10-19 — Atualizado README.md para documentar POST /auth/login, formato de resposta com JWT Bearer de 30 minutos, cabeçalho Authorization, hooks de papéis, documentação OpenAPI e rota pública de saúde.
+
+2026-10-19 — Atualizado PLANO_AV2.txt para marcar a etapa 8 concluída no código e a etapa 9 (API REST e SPA) aguardando autorização; validação da autenticação permanece planejada para a etapa 10.
+2026-10-19 — Retomada da etapa 9 autorizada pelo usuário: atualizado PLANO_AV2.txt para registrar a implementação da API REST e do SPA React como em andamento; validação automatizada segue reservada à etapa 10.
+
+2026-10-19 — Criados src/controllers/OrganizacaoController.ts e src/controllers/LoteController.ts com rotas protegidas para listar/cadastrar/consultar e atualizar organizações, renovar contratos, cadastrar/listar/consultar lotes e concluir triagem; os contratos definem schemas JSON de entradas, códigos de resposta e metadados OpenAPI.
+
+2026-10-19 — Criado src/controllers/EquipamentoController.ts com rotas protegidas para cadastrar/listar/consultar equipamentos, consultar movimentações, atualizar estado físico com justificativa e ator autenticado, registrar movimentações e concluir triagem; validações de entrada e documentação OpenAPI foram declaradas nos schemas Fastify.
+
+2026-10-19 — Criado src/controllers/RelatorioController.ts com consultas por organização/período, por status de rastreamento e relatório financeiro; atualizados ServicoOrganizacao.ts, ServicoLote.ts e ServicoEquipamento.ts e RepositorioEquipamento.ts para oferecer as operações consumidas pelos controllers, incluindo busca/listagem e desativação/atualização de organizações.
+
+2026-10-19 — Criado src/errors/ErroAplicacao.ts e aplicadas respostas de domínio para erros conhecidos; atualizado src/server/app.ts para registrar todos os controllers, declarar esquema de segurança Bearer JWT no OpenAPI e centralizar respostas para erros de domínio, validação, conflito e referências Prisma.
+
+2026-10-19 — Criado o esqueleto web/ com React + TypeScript + Vite: index.html, vite.config.ts com proxy /api para o servidor local, tsconfig.json, tsconfig.app.json, src/main.tsx, src/App.tsx e src/style.css implementam login JWT, painel operacional, navegação, consulta/criação de registros e filtro de relatório; package.json declara React e ferramentas Vite/TypeScript.
+
+2026-10-19 — Atualizados package.json e README.md com comandos dev:web e build:web e instruções para executar o site em terminal separado da API; dependências do frontend estão declaradas no package.json e a instalação/geração do lockfile está em andamento.
+
+2026-10-19 — A tentativa de baixar ferramentas de desenvolvimento do SPA foi interrompida porque registry.npmjs.org não resolveu (ENOTFOUND). A instalação parcial não forneceu Vite, plugin React nem tipagens; removidos web/node_modules e web/package-lock.json incompletos. As dependências seguem declaradas em web/package.json para instalação quando houver rede disponível.
+
+2026-10-19 — Concluída no código a etapa 9: atualizados README.md e PLANO_AV2.txt para documentar a execução da API e do site, resumir as rotas/SPA implementadas, registrar a falha DNS que impediu instalar dependências do frontend e deixar a etapa 10 aguardando autorização própria. Nenhum teste, build, typecheck ou seed foi executado.
+
+2026-10-19 — Investigado o erro npm: o registro configurado é https://registry.npmjs.org/, proxy HTTP/HTTPS não está configurado e tanto registry.npmjs.org quanto www.google.com retornam ENOTFOUND na resolução DNS, indicando indisponibilidade geral de resolução de nomes no ambiente, não configuração incorreta específica do npm. Atualizado web/package.json para versões das ferramentas disponíveis no cache local (Vite 8, plugin React 6, TypeScript 5.9 e tipagens/React 19); `npm install --prefix web --offline --no-audit` instalou as dependências e gerou web/package-lock.json. `npm ls --prefix web --depth=0` confirmou as sete dependências diretas. `npm ping` repetiu ENOTFOUND. Não executei build, testes ou typecheck; PLANO_AV2.txt registra a situação atual.
+
+2026-10-19 — Iniciada a etapa 10 após autorização expressa do usuário (“agora prossiga para a próxima etapa”); PLANO_AV2.txt registra a etapa em andamento. A validação cobrirá build/typecheck da API e SPA, schema Prisma, regras de domínio, persistência/transações e autenticação conforme viável no ambiente; o seed não será executado, conforme lembrete persistente para outra máquina.
+
+2026-10-19 — Corrigidos erros encontrados pelo typecheck da API: src/controllers/OrganizacaoController.ts agora remove a representação JSON textual do contrato antes de converter datas para Date, e src/server/app.ts estreita o erro Fastify/Prisma inicialmente unknown antes de ler code, validation e statusCode. Essas mudanças mantêm a validação e mapeamento HTTP pretendidos.
+
+2026-10-19 — Adicionados tests/regras.test.ts e o script `npm test` em package.json para validar a regra de justificativa de degradação do estado físico e o validador CNPJ. A primeira invocação via CLI tsx falhou com EPERM ao abrir um socket em /tmp imposto pelo ambiente; ajustado o comando para Node.js `--import tsx` sem o servidor IPC do CLI. Schema Prisma validado com `prisma validate`; endpoints GET /health e /docs/json responderam 200 por injeção Fastify sem conexão PostgreSQL.
+
+2026-10-19 — A verificação estática isolada de prisma/seed.ts encontrou que SEED_ADMIN_PASSWORD permanecia tipada como opcional ao entrar na função assíncrona e contaminava o tipo do hash. Ajustado o guard para produzir uma constante validada string; o seed segue sem execução conforme instrução. A tentativa de verificar PostgreSQL local foi bloqueada pelo ambiente com PermissionError ao abrir socket, portanto persistência real e transações permanecem pendentes de máquina com banco acessível.
+
+2026-10-19 — Atualizado README.md para documentar `npm test`, que executa a suíte node:test criada para regras de degradação física, validação CNPJ e matriz de permissões por papel.
+
+2026-10-19 — Validação da etapa 10: `npm run typecheck`, `npm run build`, `npm run build:web`, `npm test`, `npm run db:generate`, `prisma validate` e verificação estática do seed passaram. O SQL da migração inicial corresponde exatamente ao SQL gerado do schema. Smoke test com Fastify inject confirmou /health 200, /docs/json 200, rotas requeridas documentadas, schema Bearer para organizações e /organizacoes sem token 401. A etapa permanece parcial: sockets locais são bloqueados pelo ambiente, portanto não foi possível acessar PostgreSQL nem validar operações persistidas/transações/login integrado; seed não executado e compatibilidade de outros sistemas pendentes para a outra máquina. PLANO_AV2.txt registra as pendências.
+
+2026-10-19 — Atualizado PLANO_AV2.txt com “GUIA DE CONTINUIDADE — TESTES EM OUTRA MÁQUINA” para a próxima IA: pré-requisitos, configuração segura de ambiente e banco isolado, instalação reproduzível por lockfile, migração/seed/idempotência, builds/testes, login e autorização, fluxos CRUD/relatórios, regra de justificativa, persistência após reinício, compatibilidade do sistema e protocolo de registro/correção. A instrução reforça não alterar AV1, não expor segredos, não usar banco com dados úteis e manter a etapa 10 aberta até a integração real passar.

@@ -1,92 +1,155 @@
-import RepositorioArquivo from "../infra/RepositorioArquivo";
-import ValidadorCNPJ from "../infra/validadores/ValidadorCNPJ";
-import Organizacao from "../domain/Organizacao";
+import ErroAplicacao from "../errors/ErroAplicacao.js";
+import type { Prisma } from "../generated/prisma/client.js";
+import Organizacao from "../domain/Organizacao.js";
+import Contrato from "../domain/Contrato.js";
+import RepositorioOrganizacao from "../repositories/RepositorioOrganizacao.js";
+import ValidadorCNPJ from "../infra/validadores/ValidadorCNPJ.js";
+
+type OrganizacaoComContrato = Prisma.OrganizacaoGetPayload<{ include: { contratoVigente: true } }>;
+
+interface DadosOrganizacao {
+  id?: string;
+  razaoSocial: string;
+  cnpj: string;
+  inscricaoEstadual?: string;
+  enderecoCompleto: string;
+  telefone: string;
+  email: string;
+  dataCadastro?: Date;
+  ativo?: boolean;
+  contratoVigente?: {
+    dataAssinatura: Date;
+    dataVencimento: Date;
+    clausulas: string[];
+    valorMensal: number;
+    renovacaoAutomatica: boolean;
+  } | null;
+}
 
 export default class ServicoOrganizacao {
-    constructor(
-        private repositorio: RepositorioArquivo,
-        private validadorCNPJ: ValidadorCNPJ
-    ) {}
+  constructor(
+    private readonly repositorio = new RepositorioOrganizacao(),
+    private readonly validadorCNPJ = new ValidadorCNPJ()
+  ) {}
 
-    cadastrarOrganizacao(dados: any): Organizacao {
-        if (!this.validadorCNPJ.validar(String(dados.cnpj))) {
-            throw new Error(this.validadorCNPJ.obterMensagemErro());
+  async cadastrarOrganizacao(dados: DadosOrganizacao): Promise<Organizacao> {
+    if (!this.validadorCNPJ.validar(dados.cnpj)) {
+      throw new ErroAplicacao(this.validadorCNPJ.obterMensagemErro());
+    }
+
+    const cnpj = dados.cnpj.replace(/\D/g, "");
+    if (await this.repositorio.buscarPorCnpj(cnpj)) {
+      throw new ErroAplicacao("O CNPJ informado já está cadastrado.", 409);
+    }
+
+    const data: Prisma.OrganizacaoCreateInput = {
+      ...(dados.id ? { id: dados.id } : {}),
+      razaoSocial: dados.razaoSocial.trim(),
+      cnpj,
+      inscricaoEstadual: dados.inscricaoEstadual ?? "",
+      enderecoCompleto: dados.enderecoCompleto,
+      telefone: dados.telefone,
+      email: dados.email,
+      ...(dados.dataCadastro ? { dataCadastro: dados.dataCadastro } : {}),
+      ativo: dados.ativo ?? true,
+      ...(dados.contratoVigente ? {
+        contratoVigente: {
+          create: {
+            dataAssinatura: dados.contratoVigente.dataAssinatura,
+            dataVencimento: dados.contratoVigente.dataVencimento,
+            clausulas: dados.contratoVigente.clausulas,
+            valorMensal: dados.contratoVigente.valorMensal,
+            renovacaoAutomatica: dados.contratoVigente.renovacaoAutomatica
+          }
         }
+      } : {})
+    };
 
-        const cnpj = String(dados.cnpj).replace(/\D/g, "");
-        const organizacoes = this.carregarOrganizacoes();
-        if (organizacoes.some(organizacao => organizacao.cnpj === cnpj)) {
-            throw new Error("O CNPJ informado já está cadastrado.");
-        }
+    try {
+      return this.criarOrganizacao(await this.repositorio.criar(data));
+    } catch (erro) {
+      if (typeof erro === "object" && erro !== null && "code" in erro && erro.code === "P2002") {
+        throw new ErroAplicacao("O CNPJ informado já está cadastrado.", 409);
+      }
+      throw erro;
+    }
+  }
 
-        const contrato = dados.contratoVigente;
-        const organizacao = new Organizacao(
-            String(dados.id),
-            String(dados.razaoSocial),
-            cnpj,
-            String(dados.inscricaoEstadual ?? ""),
-            String(dados.enderecoCompleto ?? ""),
-            String(dados.telefone ?? ""),
-            String(dados.email ?? ""),
-            dados.dataCadastro instanceof Date ? dados.dataCadastro : new Date(),
-            dados.ativo ?? true,
-            contrato
-        );
-        organizacoes.push(this.serializar(organizacao));
-        this.repositorio.salvar("organizacoes.json", organizacoes);
-        return organizacao;
+  async buscarOrganizacao(id: string): Promise<Organizacao> {
+    const registro = await this.repositorio.buscarPorId(id);
+    if (!registro) throw new ErroAplicacao("Organização não encontrada.", 404);
+    return this.criarOrganizacao(registro);
+  }
+
+  async listarOrganizacoesAtivas(): Promise<Organizacao[]> {
+    const registros = await this.repositorio.listarAtivas();
+    return registros.map(registro => this.criarOrganizacao(registro));
+  }
+
+  async atualizarOrganizacao(
+    id: string,
+    dados: Partial<Omit<DadosOrganizacao, "id" | "contratoVigente" | "dataCadastro">>
+  ): Promise<Organizacao> {
+    if (dados.cnpj !== undefined) {
+      if (!this.validadorCNPJ.validar(dados.cnpj)) {
+        throw new ErroAplicacao(this.validadorCNPJ.obterMensagemErro());
+      }
+      const cnpj = dados.cnpj.replace(/\D/g, "");
+      const existente = await this.repositorio.buscarPorCnpj(cnpj);
+      if (existente && existente.id !== id) throw new ErroAplicacao("O CNPJ informado já está cadastrado.", 409);
+      dados = { ...dados, cnpj };
     }
 
-    buscarOrganizacao(id: string): Organizacao {
-        const dados = this.carregarOrganizacoes().find(organizacao => organizacao.id === id);
-        if (dados === undefined) {
-            throw new Error("Organização não encontrada.");
-        }
+    const registro = await this.repositorio.atualizar(id, {
+      ...(dados.razaoSocial !== undefined ? { razaoSocial: dados.razaoSocial.trim() } : {}),
+      ...(dados.cnpj !== undefined ? { cnpj: dados.cnpj } : {}),
+      ...(dados.inscricaoEstadual !== undefined ? { inscricaoEstadual: dados.inscricaoEstadual } : {}),
+      ...(dados.enderecoCompleto !== undefined ? { enderecoCompleto: dados.enderecoCompleto } : {}),
+      ...(dados.telefone !== undefined ? { telefone: dados.telefone } : {}),
+      ...(dados.email !== undefined ? { email: dados.email } : {}),
+      ...(dados.ativo !== undefined ? { ativo: dados.ativo } : {})
+    });
+    return this.criarOrganizacao(registro);
+  }
 
-        return this.criarOrganizacao(dados);
+  async desativarOrganizacao(id: string): Promise<void> {
+    await this.repositorio.atualizar(id, { ativo: false });
+  }
+
+  async renovarContrato(organizacaoId: string, novoVencimento: Date): Promise<void> {
+    const contrato = await this.repositorio.buscarContrato(organizacaoId);
+    if (!contrato) {
+      const organizacao = await this.repositorio.buscarPorId(organizacaoId);
+      if (!organizacao) throw new ErroAplicacao("Organização não encontrada.", 404);
+      throw new ErroAplicacao("A organização não possui contrato vigente.");
     }
+    await this.repositorio.atualizarContrato(contrato.id, { dataVencimento: novoVencimento });
+  }
 
-    listarOrganizacoesAtivas(): Organizacao[] {
-        return this.carregarOrganizacoes()
-            .filter(organizacao => organizacao.ativo)
-            .map(organizacao => this.criarOrganizacao(organizacao));
-    }
+  private criarOrganizacao(registro: OrganizacaoComContrato): Organizacao {
+    const contrato = registro.contratoVigente
+      ? new Contrato(
+          registro.contratoVigente.id,
+          registro.contratoVigente.organizacaoId,
+          registro.contratoVigente.dataAssinatura,
+          registro.contratoVigente.dataVencimento,
+          registro.contratoVigente.clausulas,
+          Number(registro.contratoVigente.valorMensal),
+          registro.contratoVigente.renovacaoAutomatica
+        )
+      : null;
 
-    renovarContrato(organizacaoId: string, novoVencimento: Date): void {
-        const organizacoes = this.carregarOrganizacoes();
-        const organizacao = organizacoes.find(item => item.id === organizacaoId);
-        if (organizacao === undefined) {
-            throw new Error("Organização não encontrada.");
-        }
-
-        organizacao.contratoVigente.dataVencimento = novoVencimento;
-        this.repositorio.salvar("organizacoes.json", organizacoes);
-    }
-
-    private carregarOrganizacoes(): any[] {
-        if (!this.repositorio.existe("organizacoes.json")) {
-            return [];
-        }
-
-        return this.repositorio.ler<any[]>("organizacoes.json");
-    }
-
-    private criarOrganizacao(dados: any): Organizacao {
-        return new Organizacao(
-            dados.id,
-            dados.razaoSocial,
-            dados.cnpj,
-            dados.inscricaoEstadual,
-            dados.enderecoCompleto,
-            dados.telefone,
-            dados.email,
-            new Date(dados.dataCadastro),
-            dados.ativo,
-            dados.contratoVigente
-        );
-    }
-
-    private serializar(organizacao: Organizacao): any {
-        return organizacao as any;
-    }
+    return new Organizacao(
+      registro.id,
+      registro.razaoSocial,
+      registro.cnpj,
+      registro.inscricaoEstadual,
+      registro.enderecoCompleto,
+      registro.telefone,
+      registro.email,
+      registro.dataCadastro,
+      registro.ativo,
+      contrato
+    );
+  }
 }

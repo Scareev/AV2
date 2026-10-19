@@ -1,21 +1,43 @@
 {
-  "name": "greencode",
+  "name": "greencode-av2",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "bin": {
-    "greencode": "dist/index.js"
-  },
+  "private": true,
+  "description": "Plataforma Greencode AV2: API e site SPA",
+  "type": "module",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "tsc && node dist/index.js",
-    "start": "tsc && node dist/index.js",
-    "test": "tsc && node --test dist/testes/fluxo.test.js"
+    "dev": "tsx watch src/server.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "build": "tsup src/server.ts --format esm --platform node --out-dir dist --clean",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:seed": "prisma db seed",
+    "dev:web": "npm --prefix web run dev",
+    "build:web": "npm --prefix web run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "dependencies": {
+    "@fastify/cors": "^11.0.0",
+    "@fastify/jwt": "^9.0.0",
+    "@fastify/swagger": "^9.0.0",
+    "@fastify/swagger-ui": "^5.0.0",
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.0.0",
+    "fastify": "^5.0.0",
+    "pg": "^8.0.0"
+  },
   "devDependencies": {
-    "@types/node": "^26.6.2"
+    "@types/bcrypt": "^5.0.0",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.0.0",
+    "prisma": "^7.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.9.0"
   }
 }

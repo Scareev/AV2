@@ -1,94 +1,98 @@
-import RepositorioArquivo from "../infra/RepositorioArquivo";
-import Lote from "../domain/Lote";
-import Equipamento from "../domain/Equipamento";
-import StatusLote from "../domain/enums/StatusLote";
-import ValidadorDataEntrada from "../infra/validadores/ValidadorDataEntrada";
+import ErroAplicacao from "../errors/ErroAplicacao.js";
+import type {
+  EstadoFisico as EstadoFisicoDb,
+  Prisma,
+  StatusLote as StatusLoteDb,
+  StatusRastreamento as StatusRastreamentoDb,
+  TipoEquipamento as TipoEquipamentoDb
+} from "../generated/prisma/client.js";
+import RepositorioLote from "../repositories/RepositorioLote.js";
+import ValidadorDataEntrada from "../infra/validadores/ValidadorDataEntrada.js";
+
+interface DadosEquipamentoLote {
+  id?: string;
+  codigoBarrasInterno: string;
+  tipo: TipoEquipamentoDb;
+  marca: string;
+  modelo: string;
+  anoFabricacao: number;
+  estadoFisico: EstadoFisicoDb;
+  pesoQuilogramas: number;
+  posicaoNoLote: number;
+  statusRastreamento?: StatusRastreamentoDb;
+}
+
+interface DadosNovoLote {
+  id?: string;
+  dataEntrada?: Date;
+  organizacaoId: string;
+  notaFiscal: string;
+  transportadora: string;
+  statusProcessamento?: StatusLoteDb;
+  observacoes?: string;
+  equipamentos?: DadosEquipamentoLote[];
+}
 
 export default class ServicoLote {
-    constructor(
-        private repositorio: RepositorioArquivo,
-        private validadorDataEntrada = new ValidadorDataEntrada()
-    ) {}
+  constructor(
+    private readonly repositorio = new RepositorioLote(),
+    private readonly validadorDataEntrada = new ValidadorDataEntrada()
+  ) {}
 
-    criarLote(dados: any): Lote {
-        const dataEntrada = dados.dataEntrada instanceof Date
-            ? dados.dataEntrada
-            : new Date(dados.dataEntrada ?? Date.now());
-        if (!this.validadorDataEntrada.validar(dataEntrada)) {
-            throw new Error(this.validadorDataEntrada.obterMensagemErro());
-        }
-
-        const lotes = this.carregarLotes();
-        const lote = new Lote(
-            String(dados.id),
-            dataEntrada,
-            String(dados.organizacaoId),
-            String(dados.notaFiscal),
-            String(dados.transportadora),
-            dados.equipamentos ?? [],
-            dados.statusProcessamento ?? StatusLote.RECEBIDO,
-            String(dados.observacoes ?? "")
-        );
-        lotes.push(lote as any);
-        this.repositorio.salvar("lotes.json", lotes);
-        return lote;
+  async criarLote(dados: DadosNovoLote) {
+    const dataEntrada = dados.dataEntrada ?? new Date();
+    if (!this.validadorDataEntrada.validar(dataEntrada)) {
+      throw new ErroAplicacao(this.validadorDataEntrada.obterMensagemErro());
     }
 
-    adicionarEquipamentoLote(
-        loteId: string,
-        equipamento: Equipamento
-    ): void {
-        const lotes = this.carregarLotes();
-        const lote = lotes.find(item => item.id === loteId);
-        if (lote === undefined) {
-            throw new Error("Lote não encontrado.");
-        }
+    const equipamentoCreate: Prisma.EquipamentoCreateWithoutLoteInput[] = (dados.equipamentos ?? []).map(equipamento => ({
+      ...(equipamento.id ? { id: equipamento.id } : {}),
+      codigoBarrasInterno: equipamento.codigoBarrasInterno,
+      tipo: equipamento.tipo,
+      marca: equipamento.marca,
+      modelo: equipamento.modelo,
+      anoFabricacao: equipamento.anoFabricacao,
+      estadoFisico: equipamento.estadoFisico,
+      pesoQuilogramas: equipamento.pesoQuilogramas,
+      posicaoNoLote: equipamento.posicaoNoLote,
+      ...(equipamento.statusRastreamento ? { statusRastreamento: equipamento.statusRastreamento } : {})
+    }));
 
-        lote.equipamentos.push(equipamento);
-        this.repositorio.salvar("lotes.json", lotes);
+    const data: Prisma.LoteCreateInput = {
+      ...(dados.id ? { id: dados.id } : {}),
+      dataEntrada,
+      notaFiscal: dados.notaFiscal,
+      transportadora: dados.transportadora,
+      ...(dados.statusProcessamento ? { statusProcessamento: dados.statusProcessamento } : {}),
+      observacoes: dados.observacoes ?? "",
+      organizacao: { connect: { id: dados.organizacaoId } },
+      equipamentos: { create: equipamentoCreate }
+    };
+    return this.repositorio.criar(data);
+  }
+
+  async buscarLote(id: string) {
+    const lote = await this.repositorio.buscarPorId(id);
+    if (!lote) throw new ErroAplicacao("Lote não encontrado.", 404);
+    return lote;
+  }
+
+  async adicionarEquipamentoLote(loteId: string, equipamento: DadosEquipamentoLote): Promise<void> {
+    if (!await this.repositorio.buscarPorId(loteId)) {
+      throw new ErroAplicacao("Lote não encontrado.", 404);
     }
+    await this.repositorio.adicionarEquipamento(loteId, equipamento);
+  }
 
-    processarTriagem(loteId: string): void {
-        const lotes = this.carregarLotes();
-        const lote = lotes.find(item => item.id === loteId);
-        if (lote === undefined) {
-            throw new Error("Lote não encontrado.");
-        }
-
-        lote.statusProcessamento = StatusLote.TRIAGEM_CONCLUIDA;
-        this.repositorio.salvar("lotes.json", lotes);
+  async processarTriagem(loteId: string): Promise<void> {
+    if (!await this.repositorio.buscarPorId(loteId)) {
+      throw new ErroAplicacao("Lote não encontrado.", 404);
     }
+    await this.repositorio.atualizar(loteId, { statusProcessamento: "TRIAGEM_CONCLUIDA" });
+  }
 
-    consultarLotePorPeriodo(
-        dataInicio: Date,
-        dataFim: Date
-    ): Lote[] {
-        return this.carregarLotes()
-            .filter(lote => {
-                const data = new Date(lote.dataEntrada).getTime();
-                return data >= dataInicio.getTime() && data <= dataFim.getTime();
-            })
-            .map(lote => this.reconstruirLote(lote));
-    }
-
-    private carregarLotes(): any[] {
-        if (!this.repositorio.existe("lotes.json")) {
-            return [];
-        }
-
-        return this.repositorio.ler<any[]>("lotes.json");
-    }
-
-    private reconstruirLote(dados: any): Lote {
-        return new Lote(
-            dados.id,
-            new Date(dados.dataEntrada),
-            dados.organizacaoId,
-            dados.notaFiscal,
-            dados.transportadora,
-            dados.equipamentos,
-            dados.statusProcessamento,
-            dados.observacoes
-        );
-    }
+  consultarLotePorPeriodo(dataInicio: Date, dataFim: Date) {
+    if (dataInicio > dataFim) throw new ErroAplicacao("O início do período deve ser anterior ao fim.");
+    return this.repositorio.listarPorPeriodo(dataInicio, dataFim);
+  }
 }

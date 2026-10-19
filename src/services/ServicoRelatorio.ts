@@ -1,55 +1,33 @@
-import StatusRastreamento from "../domain/enums/StatusRastreamento";
-import RepositorioArquivo from "../infra/RepositorioArquivo";
+import ErroAplicacao from "../errors/ErroAplicacao.js";
+import RepositorioRelatorio from "../repositories/RepositorioRelatorio.js";
+import type { StatusRastreamento as StatusRastreamentoDb } from "../generated/prisma/client.js";
 
 export default class ServicoRelatorio {
-    constructor(private repositorio?: RepositorioArquivo) {}
+  constructor(private readonly repositorio = new RepositorioRelatorio()) {}
 
-    gerarRelatorioPorOrganizacao(
-        organizacaoId: string,
-        periodo: { inicio: Date, fim: Date }
-    ): string {
-        const lotes = this.lerArquivo<any[]>("lotes.json");
-        const resultado = lotes.filter(lote => {
-            const data = new Date(lote.dataEntrada).getTime();
-            return lote.organizacaoId === organizacaoId
-                && data >= periodo.inicio.getTime()
-                && data <= periodo.fim.getTime();
-        });
+  async gerarRelatorioPorOrganizacao(
+    organizacaoId: string,
+    periodo: { inicio: Date; fim: Date }
+  ) {
+    if (periodo.inicio > periodo.fim) throw new ErroAplicacao("O início do período deve ser anterior ao fim.");
+    const lotes = await this.repositorio.listarLotesPorOrganizacao(organizacaoId, periodo.inicio, periodo.fim);
+    return { organizacaoId, totalLotes: lotes.length, lotes };
+  }
 
-        return JSON.stringify({ organizacaoId, totalLotes: resultado.length, lotes: resultado });
-    }
+  async gerarRelatorioPorStatus(nomeStatus: StatusRastreamentoDb) {
+    const equipamentos = await this.repositorio.listarEquipamentosPorStatus(nomeStatus);
+    return { status: nomeStatus, totalEquipamentos: equipamentos.length, equipamentos };
+  }
 
-    gerarRelatorioPorStatus(
-        status: StatusRastreamento
-    ): string {
-        const equipamentos = this.lerArquivo<any[]>("equipamentos.json")
-            .filter(equipamento => equipamento.statusRastreamento === status);
-        return JSON.stringify({ status, totalEquipamentos: equipamentos.length, equipamentos });
-    }
-
-    gerarRelatorioFinanceiro(
-        periodo: { inicio: Date, fim: Date }
-    ): string {
-        const organizacoes = this.lerArquivo<any[]>("organizacoes.json");
-        const contratos = organizacoes
-            .filter(organizacao => {
-                const data = new Date(organizacao.dataCadastro).getTime();
-                return data >= periodo.inicio.getTime() && data <= periodo.fim.getTime();
-            })
-            .map(organizacao => ({
-                organizacaoId: organizacao.id,
-                valorMensal: organizacao.contratoVigente?.valorMensal ?? 0
-            }));
-        const totalMensal = contratos.reduce((total, contrato) => total + contrato.valorMensal, 0);
-
-        return JSON.stringify({ totalMensal, contratos });
-    }
-
-    private lerArquivo<T>(nomeArquivo: string): T {
-        if (this.repositorio === undefined || !this.repositorio.existe(nomeArquivo)) {
-            return [] as T;
-        }
-
-        return this.repositorio.ler<T>(nomeArquivo);
-    }
+  async gerarRelatorioFinanceiro(periodo: { inicio: Date; fim: Date }) {
+    if (periodo.inicio > periodo.fim) throw new ErroAplicacao("O início do período deve ser anterior ao fim.");
+    const organizacoes = await this.repositorio.listarOrganizacoesComContrato(periodo.inicio, periodo.fim);
+    const contratos = organizacoes.map(organizacao => ({
+      organizacaoId: organizacao.id,
+      razaoSocial: organizacao.razaoSocial,
+      valorMensal: organizacao.contratoVigente ? Number(organizacao.contratoVigente.valorMensal) : 0
+    }));
+    const totalMensal = contratos.reduce((total, contrato) => total + contrato.valorMensal, 0);
+    return { totalMensal, contratos };
+  }
 }
