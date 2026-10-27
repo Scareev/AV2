@@ -3,11 +3,14 @@ dist/
 dados/
 *.tgz
 *.log.env
+.env
 .env.*
 !.env.example
+*.swp
 coverage/
 web/node_modules/
 web/dist/
 
 # Local project planning notes
 PLANO_AV2.txt
+/PROMPT_CONCLUSAO_AV2.txt

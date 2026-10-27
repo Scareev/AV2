@@ -84,7 +84,8 @@ export const OrganizacaoScalarFieldEnum = {
   telefone: 'telefone',
   email: 'email',
   dataCadastro: 'dataCadastro',
-  ativo: 'ativo'
+  ativo: 'ativo',
+  version: 'version'
 } as const
 
 export type OrganizacaoScalarFieldEnum = (typeof OrganizacaoScalarFieldEnum)[keyof typeof OrganizacaoScalarFieldEnum]
@@ -97,7 +98,10 @@ export const ContratoScalarFieldEnum = {
   dataVencimento: 'dataVencimento',
   clausulas: 'clausulas',
   valorMensal: 'valorMensal',
-  renovacaoAutomatica: 'renovacaoAutomatica'
+  renovacaoAutomatica: 'renovacaoAutomatica',
+  version: 'version',
+  encerradoEm: 'encerradoEm',
+  motivoEncerramento: 'motivoEncerramento'
 } as const
 
 export type ContratoScalarFieldEnum = (typeof ContratoScalarFieldEnum)[keyof typeof ContratoScalarFieldEnum]
@@ -110,7 +114,10 @@ export const LoteScalarFieldEnum = {
   notaFiscal: 'notaFiscal',
   transportadora: 'transportadora',
   statusProcessamento: 'statusProcessamento',
-  observacoes: 'observacoes'
+  observacoes: 'observacoes',
+  version: 'version',
+  canceladoEm: 'canceladoEm',
+  motivoCancelamento: 'motivoCancelamento'
 } as const
 
 export type LoteScalarFieldEnum = (typeof LoteScalarFieldEnum)[keyof typeof LoteScalarFieldEnum]
@@ -127,7 +134,10 @@ export const EquipamentoScalarFieldEnum = {
   pesoQuilogramas: 'pesoQuilogramas',
   loteId: 'loteId',
   posicaoNoLote: 'posicaoNoLote',
-  statusRastreamento: 'statusRastreamento'
+  statusRastreamento: 'statusRastreamento',
+  version: 'version',
+  canceladoEm: 'canceladoEm',
+  motivoCancelamento: 'motivoCancelamento'
 } as const
 
 export type EquipamentoScalarFieldEnum = (typeof EquipamentoScalarFieldEnum)[keyof typeof EquipamentoScalarFieldEnum]
@@ -140,7 +150,10 @@ export const MovimentacaoScalarFieldEnum = {
   origem: 'origem',
   destino: 'destino',
   responsavel: 'responsavel',
-  observacao: 'observacao'
+  observacao: 'observacao',
+  version: 'version',
+  tipoEvento: 'tipoEvento',
+  movimentacaoOrigemId: 'movimentacaoOrigemId'
 } as const
 
 export type MovimentacaoScalarFieldEnum = (typeof MovimentacaoScalarFieldEnum)[keyof typeof MovimentacaoScalarFieldEnum]

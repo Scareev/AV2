@@ -30,12 +30,14 @@ export type EquipamentoAvgAggregateOutputType = {
   anoFabricacao: number | null
   pesoQuilogramas: runtime.Decimal | null
   posicaoNoLote: number | null
+  version: number | null
 }
 
 export type EquipamentoSumAggregateOutputType = {
   anoFabricacao: number | null
   pesoQuilogramas: runtime.Decimal | null
   posicaoNoLote: number | null
+  version: number | null
 }
 
 export type EquipamentoMinAggregateOutputType = {
@@ -50,6 +52,9 @@ export type EquipamentoMinAggregateOutputType = {
   loteId: string | null
   posicaoNoLote: number | null
   statusRastreamento: $Enums.StatusRastreamento | null
+  version: number | null
+  canceladoEm: Date | null
+  motivoCancelamento: string | null
 }
 
 export type EquipamentoMaxAggregateOutputType = {
@@ -64,6 +69,9 @@ export type EquipamentoMaxAggregateOutputType = {
   loteId: string | null
   posicaoNoLote: number | null
   statusRastreamento: $Enums.StatusRastreamento | null
+  version: number | null
+  canceladoEm: Date | null
+  motivoCancelamento: string | null
 }
 
 export type EquipamentoCountAggregateOutputType = {
@@ -78,6 +86,9 @@ export type EquipamentoCountAggregateOutputType = {
   loteId: number
   posicaoNoLote: number
   statusRastreamento: number
+  version: number
+  canceladoEm: number
+  motivoCancelamento: number
   _all: number
 }
 
@@ -86,12 +97,14 @@ export type EquipamentoAvgAggregateInputType = {
   anoFabricacao?: true
   pesoQuilogramas?: true
   posicaoNoLote?: true
+  version?: true
 }
 
 export type EquipamentoSumAggregateInputType = {
   anoFabricacao?: true
   pesoQuilogramas?: true
   posicaoNoLote?: true
+  version?: true
 }
 
 export type EquipamentoMinAggregateInputType = {
@@ -106,6 +119,9 @@ export type EquipamentoMinAggregateInputType = {
   loteId?: true
   posicaoNoLote?: true
   statusRastreamento?: true
+  version?: true
+  canceladoEm?: true
+  motivoCancelamento?: true
 }
 
 export type EquipamentoMaxAggregateInputType = {
@@ -120,6 +136,9 @@ export type EquipamentoMaxAggregateInputType = {
   loteId?: true
   posicaoNoLote?: true
   statusRastreamento?: true
+  version?: true
+  canceladoEm?: true
+  motivoCancelamento?: true
 }
 
 export type EquipamentoCountAggregateInputType = {
@@ -134,6 +153,9 @@ export type EquipamentoCountAggregateInputType = {
   loteId?: true
   posicaoNoLote?: true
   statusRastreamento?: true
+  version?: true
+  canceladoEm?: true
+  motivoCancelamento?: true
   _all?: true
 }
 
@@ -235,6 +257,9 @@ export type EquipamentoGroupByOutputType = {
   loteId: string
   posicaoNoLote: number
   statusRastreamento: $Enums.StatusRastreamento
+  version: number
+  canceladoEm: Date | null
+  motivoCancelamento: string | null
   _count: EquipamentoCountAggregateOutputType | null
   _avg: EquipamentoAvgAggregateOutputType | null
   _sum: EquipamentoSumAggregateOutputType | null
@@ -272,6 +297,9 @@ export type EquipamentoWhereInput = {
   loteId?: Prisma.UuidFilter<"Equipamento"> | string
   posicaoNoLote?: Prisma.IntFilter<"Equipamento"> | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFilter<"Equipamento"> | $Enums.StatusRastreamento
+  version?: Prisma.IntFilter<"Equipamento"> | number
+  canceladoEm?: Prisma.DateTimeNullableFilter<"Equipamento"> | Date | string | null
+  motivoCancelamento?: Prisma.StringNullableFilter<"Equipamento"> | string | null
   lote?: Prisma.XOR<Prisma.LoteScalarRelationFilter, Prisma.LoteWhereInput>
   historicoMovimentacao?: Prisma.MovimentacaoListRelationFilter
 }
@@ -288,6 +316,9 @@ export type EquipamentoOrderByWithRelationInput = {
   loteId?: Prisma.SortOrder
   posicaoNoLote?: Prisma.SortOrder
   statusRastreamento?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  canceladoEm?: Prisma.SortOrderInput | Prisma.SortOrder
+  motivoCancelamento?: Prisma.SortOrderInput | Prisma.SortOrder
   lote?: Prisma.LoteOrderByWithRelationInput
   historicoMovimentacao?: Prisma.MovimentacaoOrderByRelationAggregateInput
 }
@@ -307,6 +338,9 @@ export type EquipamentoWhereUniqueInput = Prisma.AtLeast<{
   loteId?: Prisma.UuidFilter<"Equipamento"> | string
   posicaoNoLote?: Prisma.IntFilter<"Equipamento"> | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFilter<"Equipamento"> | $Enums.StatusRastreamento
+  version?: Prisma.IntFilter<"Equipamento"> | number
+  canceladoEm?: Prisma.DateTimeNullableFilter<"Equipamento"> | Date | string | null
+  motivoCancelamento?: Prisma.StringNullableFilter<"Equipamento"> | string | null
   lote?: Prisma.XOR<Prisma.LoteScalarRelationFilter, Prisma.LoteWhereInput>
   historicoMovimentacao?: Prisma.MovimentacaoListRelationFilter
 }, "id" | "codigoBarrasInterno">
@@ -323,6 +357,9 @@ export type EquipamentoOrderByWithAggregationInput = {
   loteId?: Prisma.SortOrder
   posicaoNoLote?: Prisma.SortOrder
   statusRastreamento?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  canceladoEm?: Prisma.SortOrderInput | Prisma.SortOrder
+  motivoCancelamento?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EquipamentoCountOrderByAggregateInput
   _avg?: Prisma.EquipamentoAvgOrderByAggregateInput
   _max?: Prisma.EquipamentoMaxOrderByAggregateInput
@@ -345,6 +382,9 @@ export type EquipamentoScalarWhereWithAggregatesInput = {
   loteId?: Prisma.UuidWithAggregatesFilter<"Equipamento"> | string
   posicaoNoLote?: Prisma.IntWithAggregatesFilter<"Equipamento"> | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoWithAggregatesFilter<"Equipamento"> | $Enums.StatusRastreamento
+  version?: Prisma.IntWithAggregatesFilter<"Equipamento"> | number
+  canceladoEm?: Prisma.DateTimeNullableWithAggregatesFilter<"Equipamento"> | Date | string | null
+  motivoCancelamento?: Prisma.StringNullableWithAggregatesFilter<"Equipamento"> | string | null
 }
 
 export type EquipamentoCreateInput = {
@@ -358,6 +398,9 @@ export type EquipamentoCreateInput = {
   pesoQuilogramas: runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
   lote: Prisma.LoteCreateNestedOneWithoutEquipamentosInput
   historicoMovimentacao?: Prisma.MovimentacaoCreateNestedManyWithoutEquipamentoInput
 }
@@ -374,6 +417,9 @@ export type EquipamentoUncheckedCreateInput = {
   loteId: string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
   historicoMovimentacao?: Prisma.MovimentacaoUncheckedCreateNestedManyWithoutEquipamentoInput
 }
 
@@ -388,6 +434,9 @@ export type EquipamentoUpdateInput = {
   pesoQuilogramas?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lote?: Prisma.LoteUpdateOneRequiredWithoutEquipamentosNestedInput
   historicoMovimentacao?: Prisma.MovimentacaoUpdateManyWithoutEquipamentoNestedInput
 }
@@ -404,6 +453,9 @@ export type EquipamentoUncheckedUpdateInput = {
   loteId?: Prisma.StringFieldUpdateOperationsInput | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historicoMovimentacao?: Prisma.MovimentacaoUncheckedUpdateManyWithoutEquipamentoNestedInput
 }
 
@@ -419,6 +471,9 @@ export type EquipamentoCreateManyInput = {
   loteId: string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
 }
 
 export type EquipamentoUpdateManyMutationInput = {
@@ -432,6 +487,9 @@ export type EquipamentoUpdateManyMutationInput = {
   pesoQuilogramas?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EquipamentoUncheckedUpdateManyInput = {
@@ -446,6 +504,9 @@ export type EquipamentoUncheckedUpdateManyInput = {
   loteId?: Prisma.StringFieldUpdateOperationsInput | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EquipamentoListRelationFilter = {
@@ -470,12 +531,16 @@ export type EquipamentoCountOrderByAggregateInput = {
   loteId?: Prisma.SortOrder
   posicaoNoLote?: Prisma.SortOrder
   statusRastreamento?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  canceladoEm?: Prisma.SortOrder
+  motivoCancelamento?: Prisma.SortOrder
 }
 
 export type EquipamentoAvgOrderByAggregateInput = {
   anoFabricacao?: Prisma.SortOrder
   pesoQuilogramas?: Prisma.SortOrder
   posicaoNoLote?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type EquipamentoMaxOrderByAggregateInput = {
@@ -490,6 +555,9 @@ export type EquipamentoMaxOrderByAggregateInput = {
   loteId?: Prisma.SortOrder
   posicaoNoLote?: Prisma.SortOrder
   statusRastreamento?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  canceladoEm?: Prisma.SortOrder
+  motivoCancelamento?: Prisma.SortOrder
 }
 
 export type EquipamentoMinOrderByAggregateInput = {
@@ -504,12 +572,16 @@ export type EquipamentoMinOrderByAggregateInput = {
   loteId?: Prisma.SortOrder
   posicaoNoLote?: Prisma.SortOrder
   statusRastreamento?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  canceladoEm?: Prisma.SortOrder
+  motivoCancelamento?: Prisma.SortOrder
 }
 
 export type EquipamentoSumOrderByAggregateInput = {
   anoFabricacao?: Prisma.SortOrder
   pesoQuilogramas?: Prisma.SortOrder
   posicaoNoLote?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type EquipamentoScalarRelationFilter = {
@@ -563,14 +635,6 @@ export type EnumTipoEquipamentoFieldUpdateOperationsInput = {
   set?: $Enums.TipoEquipamento
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type EnumEstadoFisicoFieldUpdateOperationsInput = {
   set?: $Enums.EstadoFisico
 }
@@ -604,6 +668,9 @@ export type EquipamentoCreateWithoutLoteInput = {
   pesoQuilogramas: runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
   historicoMovimentacao?: Prisma.MovimentacaoCreateNestedManyWithoutEquipamentoInput
 }
 
@@ -618,6 +685,9 @@ export type EquipamentoUncheckedCreateWithoutLoteInput = {
   pesoQuilogramas: runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
   historicoMovimentacao?: Prisma.MovimentacaoUncheckedCreateNestedManyWithoutEquipamentoInput
 }
 
@@ -662,6 +732,9 @@ export type EquipamentoScalarWhereInput = {
   loteId?: Prisma.UuidFilter<"Equipamento"> | string
   posicaoNoLote?: Prisma.IntFilter<"Equipamento"> | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFilter<"Equipamento"> | $Enums.StatusRastreamento
+  version?: Prisma.IntFilter<"Equipamento"> | number
+  canceladoEm?: Prisma.DateTimeNullableFilter<"Equipamento"> | Date | string | null
+  motivoCancelamento?: Prisma.StringNullableFilter<"Equipamento"> | string | null
 }
 
 export type EquipamentoCreateWithoutHistoricoMovimentacaoInput = {
@@ -675,6 +748,9 @@ export type EquipamentoCreateWithoutHistoricoMovimentacaoInput = {
   pesoQuilogramas: runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
   lote: Prisma.LoteCreateNestedOneWithoutEquipamentosInput
 }
 
@@ -690,6 +766,9 @@ export type EquipamentoUncheckedCreateWithoutHistoricoMovimentacaoInput = {
   loteId: string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
 }
 
 export type EquipamentoCreateOrConnectWithoutHistoricoMovimentacaoInput = {
@@ -719,6 +798,9 @@ export type EquipamentoUpdateWithoutHistoricoMovimentacaoInput = {
   pesoQuilogramas?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lote?: Prisma.LoteUpdateOneRequiredWithoutEquipamentosNestedInput
 }
 
@@ -734,6 +816,9 @@ export type EquipamentoUncheckedUpdateWithoutHistoricoMovimentacaoInput = {
   loteId?: Prisma.StringFieldUpdateOperationsInput | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EquipamentoCreateManyLoteInput = {
@@ -747,6 +832,9 @@ export type EquipamentoCreateManyLoteInput = {
   pesoQuilogramas: runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote: number
   statusRastreamento?: $Enums.StatusRastreamento
+  version?: number
+  canceladoEm?: Date | string | null
+  motivoCancelamento?: string | null
 }
 
 export type EquipamentoUpdateWithoutLoteInput = {
@@ -760,6 +848,9 @@ export type EquipamentoUpdateWithoutLoteInput = {
   pesoQuilogramas?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historicoMovimentacao?: Prisma.MovimentacaoUpdateManyWithoutEquipamentoNestedInput
 }
 
@@ -774,6 +865,9 @@ export type EquipamentoUncheckedUpdateWithoutLoteInput = {
   pesoQuilogramas?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historicoMovimentacao?: Prisma.MovimentacaoUncheckedUpdateManyWithoutEquipamentoNestedInput
 }
 
@@ -788,6 +882,9 @@ export type EquipamentoUncheckedUpdateManyWithoutLoteInput = {
   pesoQuilogramas?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   posicaoNoLote?: Prisma.IntFieldUpdateOperationsInput | number
   statusRastreamento?: Prisma.EnumStatusRastreamentoFieldUpdateOperationsInput | $Enums.StatusRastreamento
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  canceladoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoCancelamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -833,6 +930,9 @@ export type EquipamentoSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   loteId?: boolean
   posicaoNoLote?: boolean
   statusRastreamento?: boolean
+  version?: boolean
+  canceladoEm?: boolean
+  motivoCancelamento?: boolean
   lote?: boolean | Prisma.LoteDefaultArgs<ExtArgs>
   historicoMovimentacao?: boolean | Prisma.Equipamento$historicoMovimentacaoArgs<ExtArgs>
   _count?: boolean | Prisma.EquipamentoCountOutputTypeDefaultArgs<ExtArgs>
@@ -850,6 +950,9 @@ export type EquipamentoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   loteId?: boolean
   posicaoNoLote?: boolean
   statusRastreamento?: boolean
+  version?: boolean
+  canceladoEm?: boolean
+  motivoCancelamento?: boolean
   lote?: boolean | Prisma.LoteDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["equipamento"]>
 
@@ -865,6 +968,9 @@ export type EquipamentoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   loteId?: boolean
   posicaoNoLote?: boolean
   statusRastreamento?: boolean
+  version?: boolean
+  canceladoEm?: boolean
+  motivoCancelamento?: boolean
   lote?: boolean | Prisma.LoteDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["equipamento"]>
 
@@ -880,9 +986,12 @@ export type EquipamentoSelectScalar = {
   loteId?: boolean
   posicaoNoLote?: boolean
   statusRastreamento?: boolean
+  version?: boolean
+  canceladoEm?: boolean
+  motivoCancelamento?: boolean
 }
 
-export type EquipamentoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codigoBarrasInterno" | "tipo" | "marca" | "modelo" | "anoFabricacao" | "estadoFisico" | "pesoQuilogramas" | "loteId" | "posicaoNoLote" | "statusRastreamento", ExtArgs["result"]["equipamento"]>
+export type EquipamentoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codigoBarrasInterno" | "tipo" | "marca" | "modelo" | "anoFabricacao" | "estadoFisico" | "pesoQuilogramas" | "loteId" | "posicaoNoLote" | "statusRastreamento" | "version" | "canceladoEm" | "motivoCancelamento", ExtArgs["result"]["equipamento"]>
 export type EquipamentoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lote?: boolean | Prisma.LoteDefaultArgs<ExtArgs>
   historicoMovimentacao?: boolean | Prisma.Equipamento$historicoMovimentacaoArgs<ExtArgs>
@@ -913,6 +1022,9 @@ export type $EquipamentoPayload<ExtArgs extends runtime.Types.Extensions.Interna
     loteId: string
     posicaoNoLote: number
     statusRastreamento: $Enums.StatusRastreamento
+    version: number
+    canceladoEm: Date | null
+    motivoCancelamento: string | null
   }, ExtArgs["result"]["equipamento"]>
   composites: {}
 }
@@ -1349,6 +1461,9 @@ export interface EquipamentoFieldRefs {
   readonly loteId: Prisma.FieldRef<"Equipamento", 'String'>
   readonly posicaoNoLote: Prisma.FieldRef<"Equipamento", 'Int'>
   readonly statusRastreamento: Prisma.FieldRef<"Equipamento", 'StatusRastreamento'>
+  readonly version: Prisma.FieldRef<"Equipamento", 'Int'>
+  readonly canceladoEm: Prisma.FieldRef<"Equipamento", 'DateTime'>
+  readonly motivoCancelamento: Prisma.FieldRef<"Equipamento", 'String'>
 }
     
 

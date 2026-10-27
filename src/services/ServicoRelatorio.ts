@@ -25,7 +25,9 @@ export default class ServicoRelatorio {
     const contratos = organizacoes.map(organizacao => ({
       organizacaoId: organizacao.id,
       razaoSocial: organizacao.razaoSocial,
-      valorMensal: organizacao.contratoVigente ? Number(organizacao.contratoVigente.valorMensal) : 0
+      valorMensal: organizacao.contratoVigente && !organizacao.contratoVigente.encerradoEm
+        ? Number(organizacao.contratoVigente.valorMensal)
+        : 0
     }));
     const totalMensal = contratos.reduce((total, contrato) => total + contrato.valorMensal, 0);
     return { totalMensal, contratos };

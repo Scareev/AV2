@@ -11,6 +11,7 @@ export default class Organizacao {
         public email: string,
         public readonly dataCadastro: Date,
         private ativo: boolean,
-        public contratoVigente: Contrato | null
+        public contratoVigente: Contrato | null,
+        public readonly version = 0
     ) {}
 }

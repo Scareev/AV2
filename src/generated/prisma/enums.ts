@@ -61,6 +61,15 @@ export const StatusLote = {
 export type StatusLote = (typeof StatusLote)[keyof typeof StatusLote]
 
 
+export const TipoEventoMovimentacao = {
+  REGISTRO: 'REGISTRO',
+  CORRECAO: 'CORRECAO',
+  ESTORNO: 'ESTORNO'
+} as const
+
+export type TipoEventoMovimentacao = (typeof TipoEventoMovimentacao)[keyof typeof TipoEventoMovimentacao]
+
+
 export const PapelUsuario = {
   ADMINISTRADOR: 'ADMINISTRADOR',
   OPERADOR_CADASTRO: 'OPERADOR_CADASTRO',

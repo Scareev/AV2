@@ -28,10 +28,12 @@ export type AggregateContrato = {
 
 export type ContratoAvgAggregateOutputType = {
   valorMensal: runtime.Decimal | null
+  version: number | null
 }
 
 export type ContratoSumAggregateOutputType = {
   valorMensal: runtime.Decimal | null
+  version: number | null
 }
 
 export type ContratoMinAggregateOutputType = {
@@ -41,6 +43,9 @@ export type ContratoMinAggregateOutputType = {
   dataVencimento: Date | null
   valorMensal: runtime.Decimal | null
   renovacaoAutomatica: boolean | null
+  version: number | null
+  encerradoEm: Date | null
+  motivoEncerramento: string | null
 }
 
 export type ContratoMaxAggregateOutputType = {
@@ -50,6 +55,9 @@ export type ContratoMaxAggregateOutputType = {
   dataVencimento: Date | null
   valorMensal: runtime.Decimal | null
   renovacaoAutomatica: boolean | null
+  version: number | null
+  encerradoEm: Date | null
+  motivoEncerramento: string | null
 }
 
 export type ContratoCountAggregateOutputType = {
@@ -60,16 +68,21 @@ export type ContratoCountAggregateOutputType = {
   clausulas: number
   valorMensal: number
   renovacaoAutomatica: number
+  version: number
+  encerradoEm: number
+  motivoEncerramento: number
   _all: number
 }
 
 
 export type ContratoAvgAggregateInputType = {
   valorMensal?: true
+  version?: true
 }
 
 export type ContratoSumAggregateInputType = {
   valorMensal?: true
+  version?: true
 }
 
 export type ContratoMinAggregateInputType = {
@@ -79,6 +92,9 @@ export type ContratoMinAggregateInputType = {
   dataVencimento?: true
   valorMensal?: true
   renovacaoAutomatica?: true
+  version?: true
+  encerradoEm?: true
+  motivoEncerramento?: true
 }
 
 export type ContratoMaxAggregateInputType = {
@@ -88,6 +104,9 @@ export type ContratoMaxAggregateInputType = {
   dataVencimento?: true
   valorMensal?: true
   renovacaoAutomatica?: true
+  version?: true
+  encerradoEm?: true
+  motivoEncerramento?: true
 }
 
 export type ContratoCountAggregateInputType = {
@@ -98,6 +117,9 @@ export type ContratoCountAggregateInputType = {
   clausulas?: true
   valorMensal?: true
   renovacaoAutomatica?: true
+  version?: true
+  encerradoEm?: true
+  motivoEncerramento?: true
   _all?: true
 }
 
@@ -195,6 +217,9 @@ export type ContratoGroupByOutputType = {
   clausulas: string[]
   valorMensal: runtime.Decimal
   renovacaoAutomatica: boolean
+  version: number
+  encerradoEm: Date | null
+  motivoEncerramento: string | null
   _count: ContratoCountAggregateOutputType | null
   _avg: ContratoAvgAggregateOutputType | null
   _sum: ContratoSumAggregateOutputType | null
@@ -228,6 +253,9 @@ export type ContratoWhereInput = {
   clausulas?: Prisma.StringNullableListFilter<"Contrato">
   valorMensal?: Prisma.DecimalFilter<"Contrato"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFilter<"Contrato"> | boolean
+  version?: Prisma.IntFilter<"Contrato"> | number
+  encerradoEm?: Prisma.DateTimeNullableFilter<"Contrato"> | Date | string | null
+  motivoEncerramento?: Prisma.StringNullableFilter<"Contrato"> | string | null
   organizacao?: Prisma.XOR<Prisma.OrganizacaoScalarRelationFilter, Prisma.OrganizacaoWhereInput>
 }
 
@@ -239,6 +267,9 @@ export type ContratoOrderByWithRelationInput = {
   clausulas?: Prisma.SortOrder
   valorMensal?: Prisma.SortOrder
   renovacaoAutomatica?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  encerradoEm?: Prisma.SortOrderInput | Prisma.SortOrder
+  motivoEncerramento?: Prisma.SortOrderInput | Prisma.SortOrder
   organizacao?: Prisma.OrganizacaoOrderByWithRelationInput
 }
 
@@ -253,6 +284,9 @@ export type ContratoWhereUniqueInput = Prisma.AtLeast<{
   clausulas?: Prisma.StringNullableListFilter<"Contrato">
   valorMensal?: Prisma.DecimalFilter<"Contrato"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFilter<"Contrato"> | boolean
+  version?: Prisma.IntFilter<"Contrato"> | number
+  encerradoEm?: Prisma.DateTimeNullableFilter<"Contrato"> | Date | string | null
+  motivoEncerramento?: Prisma.StringNullableFilter<"Contrato"> | string | null
   organizacao?: Prisma.XOR<Prisma.OrganizacaoScalarRelationFilter, Prisma.OrganizacaoWhereInput>
 }, "id" | "organizacaoId">
 
@@ -264,6 +298,9 @@ export type ContratoOrderByWithAggregationInput = {
   clausulas?: Prisma.SortOrder
   valorMensal?: Prisma.SortOrder
   renovacaoAutomatica?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  encerradoEm?: Prisma.SortOrderInput | Prisma.SortOrder
+  motivoEncerramento?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ContratoCountOrderByAggregateInput
   _avg?: Prisma.ContratoAvgOrderByAggregateInput
   _max?: Prisma.ContratoMaxOrderByAggregateInput
@@ -282,6 +319,9 @@ export type ContratoScalarWhereWithAggregatesInput = {
   clausulas?: Prisma.StringNullableListFilter<"Contrato">
   valorMensal?: Prisma.DecimalWithAggregatesFilter<"Contrato"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolWithAggregatesFilter<"Contrato"> | boolean
+  version?: Prisma.IntWithAggregatesFilter<"Contrato"> | number
+  encerradoEm?: Prisma.DateTimeNullableWithAggregatesFilter<"Contrato"> | Date | string | null
+  motivoEncerramento?: Prisma.StringNullableWithAggregatesFilter<"Contrato"> | string | null
 }
 
 export type ContratoCreateInput = {
@@ -291,6 +331,9 @@ export type ContratoCreateInput = {
   clausulas?: Prisma.ContratoCreateclausulasInput | string[]
   valorMensal: runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica: boolean
+  version?: number
+  encerradoEm?: Date | string | null
+  motivoEncerramento?: string | null
   organizacao: Prisma.OrganizacaoCreateNestedOneWithoutContratoVigenteInput
 }
 
@@ -302,6 +345,9 @@ export type ContratoUncheckedCreateInput = {
   clausulas?: Prisma.ContratoCreateclausulasInput | string[]
   valorMensal: runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica: boolean
+  version?: number
+  encerradoEm?: Date | string | null
+  motivoEncerramento?: string | null
 }
 
 export type ContratoUpdateInput = {
@@ -311,6 +357,9 @@ export type ContratoUpdateInput = {
   clausulas?: Prisma.ContratoUpdateclausulasInput | string[]
   valorMensal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  encerradoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoEncerramento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizacao?: Prisma.OrganizacaoUpdateOneRequiredWithoutContratoVigenteNestedInput
 }
 
@@ -322,6 +371,9 @@ export type ContratoUncheckedUpdateInput = {
   clausulas?: Prisma.ContratoUpdateclausulasInput | string[]
   valorMensal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  encerradoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoEncerramento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ContratoCreateManyInput = {
@@ -332,6 +384,9 @@ export type ContratoCreateManyInput = {
   clausulas?: Prisma.ContratoCreateclausulasInput | string[]
   valorMensal: runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica: boolean
+  version?: number
+  encerradoEm?: Date | string | null
+  motivoEncerramento?: string | null
 }
 
 export type ContratoUpdateManyMutationInput = {
@@ -341,6 +396,9 @@ export type ContratoUpdateManyMutationInput = {
   clausulas?: Prisma.ContratoUpdateclausulasInput | string[]
   valorMensal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  encerradoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoEncerramento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ContratoUncheckedUpdateManyInput = {
@@ -351,6 +409,9 @@ export type ContratoUncheckedUpdateManyInput = {
   clausulas?: Prisma.ContratoUpdateclausulasInput | string[]
   valorMensal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  encerradoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoEncerramento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ContratoNullableScalarRelationFilter = {
@@ -374,10 +435,14 @@ export type ContratoCountOrderByAggregateInput = {
   clausulas?: Prisma.SortOrder
   valorMensal?: Prisma.SortOrder
   renovacaoAutomatica?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  encerradoEm?: Prisma.SortOrder
+  motivoEncerramento?: Prisma.SortOrder
 }
 
 export type ContratoAvgOrderByAggregateInput = {
   valorMensal?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type ContratoMaxOrderByAggregateInput = {
@@ -387,6 +452,9 @@ export type ContratoMaxOrderByAggregateInput = {
   dataVencimento?: Prisma.SortOrder
   valorMensal?: Prisma.SortOrder
   renovacaoAutomatica?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  encerradoEm?: Prisma.SortOrder
+  motivoEncerramento?: Prisma.SortOrder
 }
 
 export type ContratoMinOrderByAggregateInput = {
@@ -396,10 +464,14 @@ export type ContratoMinOrderByAggregateInput = {
   dataVencimento?: Prisma.SortOrder
   valorMensal?: Prisma.SortOrder
   renovacaoAutomatica?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  encerradoEm?: Prisma.SortOrder
+  motivoEncerramento?: Prisma.SortOrder
 }
 
 export type ContratoSumOrderByAggregateInput = {
   valorMensal?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type ContratoCreateNestedOneWithoutOrganizacaoInput = {
@@ -451,6 +523,14 @@ export type DecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 export type ContratoCreateWithoutOrganizacaoInput = {
   id?: string
   dataAssinatura: Date | string
@@ -458,6 +538,9 @@ export type ContratoCreateWithoutOrganizacaoInput = {
   clausulas?: Prisma.ContratoCreateclausulasInput | string[]
   valorMensal: runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica: boolean
+  version?: number
+  encerradoEm?: Date | string | null
+  motivoEncerramento?: string | null
 }
 
 export type ContratoUncheckedCreateWithoutOrganizacaoInput = {
@@ -467,6 +550,9 @@ export type ContratoUncheckedCreateWithoutOrganizacaoInput = {
   clausulas?: Prisma.ContratoCreateclausulasInput | string[]
   valorMensal: runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica: boolean
+  version?: number
+  encerradoEm?: Date | string | null
+  motivoEncerramento?: string | null
 }
 
 export type ContratoCreateOrConnectWithoutOrganizacaoInput = {
@@ -492,6 +578,9 @@ export type ContratoUpdateWithoutOrganizacaoInput = {
   clausulas?: Prisma.ContratoUpdateclausulasInput | string[]
   valorMensal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  encerradoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoEncerramento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ContratoUncheckedUpdateWithoutOrganizacaoInput = {
@@ -501,6 +590,9 @@ export type ContratoUncheckedUpdateWithoutOrganizacaoInput = {
   clausulas?: Prisma.ContratoUpdateclausulasInput | string[]
   valorMensal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   renovacaoAutomatica?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  encerradoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  motivoEncerramento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -513,6 +605,9 @@ export type ContratoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   clausulas?: boolean
   valorMensal?: boolean
   renovacaoAutomatica?: boolean
+  version?: boolean
+  encerradoEm?: boolean
+  motivoEncerramento?: boolean
   organizacao?: boolean | Prisma.OrganizacaoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contrato"]>
 
@@ -524,6 +619,9 @@ export type ContratoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   clausulas?: boolean
   valorMensal?: boolean
   renovacaoAutomatica?: boolean
+  version?: boolean
+  encerradoEm?: boolean
+  motivoEncerramento?: boolean
   organizacao?: boolean | Prisma.OrganizacaoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contrato"]>
 
@@ -535,6 +633,9 @@ export type ContratoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   clausulas?: boolean
   valorMensal?: boolean
   renovacaoAutomatica?: boolean
+  version?: boolean
+  encerradoEm?: boolean
+  motivoEncerramento?: boolean
   organizacao?: boolean | Prisma.OrganizacaoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contrato"]>
 
@@ -546,9 +647,12 @@ export type ContratoSelectScalar = {
   clausulas?: boolean
   valorMensal?: boolean
   renovacaoAutomatica?: boolean
+  version?: boolean
+  encerradoEm?: boolean
+  motivoEncerramento?: boolean
 }
 
-export type ContratoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizacaoId" | "dataAssinatura" | "dataVencimento" | "clausulas" | "valorMensal" | "renovacaoAutomatica", ExtArgs["result"]["contrato"]>
+export type ContratoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizacaoId" | "dataAssinatura" | "dataVencimento" | "clausulas" | "valorMensal" | "renovacaoAutomatica" | "version" | "encerradoEm" | "motivoEncerramento", ExtArgs["result"]["contrato"]>
 export type ContratoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizacao?: boolean | Prisma.OrganizacaoDefaultArgs<ExtArgs>
 }
@@ -572,6 +676,9 @@ export type $ContratoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     clausulas: string[]
     valorMensal: runtime.Decimal
     renovacaoAutomatica: boolean
+    version: number
+    encerradoEm: Date | null
+    motivoEncerramento: string | null
   }, ExtArgs["result"]["contrato"]>
   composites: {}
 }
@@ -1003,6 +1110,9 @@ export interface ContratoFieldRefs {
   readonly clausulas: Prisma.FieldRef<"Contrato", 'String[]'>
   readonly valorMensal: Prisma.FieldRef<"Contrato", 'Decimal'>
   readonly renovacaoAutomatica: Prisma.FieldRef<"Contrato", 'Boolean'>
+  readonly version: Prisma.FieldRef<"Contrato", 'Int'>
+  readonly encerradoEm: Prisma.FieldRef<"Contrato", 'DateTime'>
+  readonly motivoEncerramento: Prisma.FieldRef<"Contrato", 'String'>
 }
     
 

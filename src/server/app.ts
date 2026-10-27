@@ -60,6 +60,7 @@ export async function buildServer() {
         if (codigo === "P2002") return reply.code(409).send({ erro: "Já existe um registro com os mesmos dados únicos." });
         if (codigo === "P2025") return reply.code(404).send({ erro: "Registro não encontrado." });
         if (codigo === "P2003") return reply.code(400).send({ erro: "A referência informada não existe ou está em uso." });
+        if (codigo === "P2034") return reply.code(409).send({ erro: "Conflito de atualização. Recarregue os dados e tente novamente." });
         const statusCode = typeof details.statusCode === "number" ? details.statusCode : undefined;
         const message = error instanceof Error ? error.message : "Erro na solicitação.";
         if (details.validation || (statusCode !== undefined && statusCode < 500)) {

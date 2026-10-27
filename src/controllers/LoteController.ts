@@ -23,6 +23,13 @@ interface LoteBody {
   observacoes?: string;
   equipamentos?: EquipamentoLoteBody[];
 }
+interface LotePatchBody {
+  version: number;
+  dataEntrada?: string;
+  notaFiscal?: string;
+  transportadora?: string;
+  observacoes?: string;
+}
 
 const equipamentoSchema = {
   type: "object", additionalProperties: false,
@@ -71,7 +78,7 @@ export default class LoteController {
       return reply.code(201).send(lote);
     });
 
-    app.get<{ Querystring: { dataInicio: string; dataFim: string } }>("/lotes", {
+    app.get<{ Querystring: { dataInicio: string; dataFim: string; incluirCancelados?: boolean } }>("/lotes", {
       preHandler: [autenticar, autorizar("lote")],
       schema: { security: [{ bearerAuth: [] }],
         tags: ["Lotes"], summary: "Lista lotes por período de entrada",
@@ -79,12 +86,13 @@ export default class LoteController {
           type: "object", additionalProperties: false, required: ["dataInicio", "dataFim"],
           properties: {
             dataInicio: { type: "string", format: "date-time" },
-            dataFim: { type: "string", format: "date-time" }
+            dataFim: { type: "string", format: "date-time" },
+            incluirCancelados: { type: "boolean", default: false }
           }
         }
       }
     }, request => this.servico.consultarLotePorPeriodo(
-      new Date(request.query.dataInicio), new Date(request.query.dataFim)
+      new Date(request.query.dataInicio), new Date(request.query.dataFim), request.query.incluirCancelados
     ));
 
     app.get<{ Params: { id: string } }>("/lotes/:id", {
@@ -95,14 +103,57 @@ export default class LoteController {
       }
     }, request => this.servico.buscarLote(request.params.id));
 
-    app.patch<{ Params: { id: string } }>("/lotes/:id/triagem", {
+    app.patch<{ Params: { id: string }; Body: LotePatchBody }>("/lotes/:id", {
+      preHandler: [autenticar, autorizar("lote")],
+      schema: { security: [{ bearerAuth: [] }],
+        tags: ["Lotes"], summary: "Atualiza dados do lote antes da triagem",
+        params: { type: "object", required: ["id"], properties: { id: { type: "string", format: "uuid" } } },
+        body: {
+          type: "object", minProperties: 2, additionalProperties: false, required: ["version"],
+          properties: {
+            version: { type: "integer", minimum: 0 },
+            dataEntrada: { type: "string", format: "date-time" },
+            notaFiscal: { type: "string", minLength: 1 },
+            transportadora: { type: "string", minLength: 1 },
+            observacoes: { type: "string" }
+          }
+        }
+      }
+    }, request => {
+      const { version, dataEntrada, ...dados } = request.body;
+      return this.servico.atualizarLote(request.params.id, version, {
+        ...dados,
+        ...(dataEntrada ? { dataEntrada: new Date(dataEntrada) } : {})
+      });
+    });
+
+    app.delete<{ Params: { id: string }; Body: { version: number; motivo: string } }>("/lotes/:id", {
+      preHandler: [autenticar, autorizar("lote")],
+      schema: { security: [{ bearerAuth: [] }],
+        tags: ["Lotes"], summary: "Cancela lote e equipamentos sem apagar o histórico",
+        params: { type: "object", required: ["id"], properties: { id: { type: "string", format: "uuid" } } },
+        body: {
+          type: "object", additionalProperties: false, required: ["version", "motivo"],
+          properties: { version: { type: "integer", minimum: 0 }, motivo: { type: "string", minLength: 1 } }
+        }
+      }
+    }, async (request, reply) => {
+      await this.servico.cancelarLote(request.params.id, request.body.version, request.body.motivo);
+      return reply.code(204).send();
+    });
+
+    app.patch<{ Params: { id: string }; Body: { version: number } }>("/lotes/:id/triagem", {
       preHandler: [autenticar, autorizar("lote")],
       schema: { security: [{ bearerAuth: [] }],
         tags: ["Lotes"], summary: "Marca a triagem do lote como concluída",
-        params: { type: "object", required: ["id"], properties: { id: { type: "string", format: "uuid" } } }
+        params: { type: "object", required: ["id"], properties: { id: { type: "string", format: "uuid" } } },
+        body: {
+          type: "object", additionalProperties: false, required: ["version"],
+          properties: { version: { type: "integer", minimum: 0 } }
+        }
       }
     }, async (request, reply) => {
-      await this.servico.processarTriagem(request.params.id);
+      await this.servico.processarTriagem(request.params.id, request.body.version);
       return reply.code(204).send();
     });
   }

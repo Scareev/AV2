@@ -327,10 +327,6 @@ export type CredencialMinOrderByAggregateInput = {
   papel?: Prisma.SortOrder
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type EnumPapelUsuarioFieldUpdateOperationsInput = {
   set?: $Enums.PapelUsuario
 }

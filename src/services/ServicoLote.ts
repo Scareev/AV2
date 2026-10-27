@@ -33,6 +33,13 @@ interface DadosNovoLote {
   equipamentos?: DadosEquipamentoLote[];
 }
 
+interface DadosAtualizacaoLote {
+  dataEntrada?: Date;
+  notaFiscal?: string;
+  transportadora?: string;
+  observacoes?: string;
+}
+
 export default class ServicoLote {
   constructor(
     private readonly repositorio = new RepositorioLote(),
@@ -77,22 +84,49 @@ export default class ServicoLote {
     return lote;
   }
 
-  async adicionarEquipamentoLote(loteId: string, equipamento: DadosEquipamentoLote): Promise<void> {
+  async adicionarEquipamentoLote(loteId: string, version: number, equipamento: DadosEquipamentoLote): Promise<void> {
     if (!await this.repositorio.buscarPorId(loteId)) {
       throw new ErroAplicacao("Lote não encontrado.", 404);
     }
-    await this.repositorio.adicionarEquipamento(loteId, equipamento);
+    await this.repositorio.adicionarEquipamento(loteId, version, equipamento);
   }
 
-  async processarTriagem(loteId: string): Promise<void> {
-    if (!await this.repositorio.buscarPorId(loteId)) {
+  async processarTriagem(loteId: string, version: number): Promise<void> {
+    const lote = await this.repositorio.buscarPorId(loteId);
+    if (!lote) {
       throw new ErroAplicacao("Lote não encontrado.", 404);
     }
-    await this.repositorio.atualizar(loteId, { statusProcessamento: "TRIAGEM_CONCLUIDA" });
+    if (lote.canceladoEm) throw new ErroAplicacao("Não é possível processar um lote cancelado.", 409);
+    if (lote.statusProcessamento !== "RECEBIDO") throw new ErroAplicacao("A triagem do lote já foi iniciada ou concluída.", 409);
+    await this.repositorio.atualizar(loteId, version, { statusProcessamento: "TRIAGEM_CONCLUIDA" });
   }
 
-  consultarLotePorPeriodo(dataInicio: Date, dataFim: Date) {
+  async atualizarLote(id: string, version: number, dados: DadosAtualizacaoLote) {
+    const lote = await this.repositorio.buscarPorId(id);
+    if (!lote) throw new ErroAplicacao("Lote não encontrado.", 404);
+    if (lote.canceladoEm) throw new ErroAplicacao("Não é possível alterar um lote cancelado.", 409);
+    if (lote.statusProcessamento !== "RECEBIDO") {
+      throw new ErroAplicacao("Só é possível editar o lote antes do início da triagem.", 409);
+    }
+    if (dados.dataEntrada && !this.validadorDataEntrada.validar(dados.dataEntrada)) {
+      throw new ErroAplicacao(this.validadorDataEntrada.obterMensagemErro());
+    }
+    return this.repositorio.atualizar(id, version, dados);
+  }
+
+  async cancelarLote(id: string, version: number, motivo: string): Promise<void> {
+    const lote = await this.repositorio.buscarPorId(id);
+    if (!lote) throw new ErroAplicacao("Lote não encontrado.", 404);
+    if (lote.canceladoEm) throw new ErroAplicacao("Lote já está cancelado.", 409);
+    if (lote.statusProcessamento !== "RECEBIDO") {
+      throw new ErroAplicacao("Só é possível cancelar um lote antes do início da triagem.", 409);
+    }
+    if (!motivo.trim()) throw new ErroAplicacao("Informe o motivo do cancelamento.");
+    await this.repositorio.cancelar(id, version, motivo.trim());
+  }
+
+  consultarLotePorPeriodo(dataInicio: Date, dataFim: Date, incluirCancelados = false) {
     if (dataInicio > dataFim) throw new ErroAplicacao("O início do período deve ser anterior ao fim.");
-    return this.repositorio.listarPorPeriodo(dataInicio, dataFim);
+    return this.repositorio.listarPorPeriodo(dataInicio, dataFim, incluirCancelados);
   }
 }
